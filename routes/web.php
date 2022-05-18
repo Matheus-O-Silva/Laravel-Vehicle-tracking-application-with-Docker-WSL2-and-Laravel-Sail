@@ -3,6 +3,7 @@
 use App\Events\CarMoved;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApiRestaurantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,7 @@ Route::get('/app', function () {
 Route::get('/move', function () {
     event(new CarMoved(-22.951908011335632, -43.21047912431532));
 });
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('/api/map-marker', [App\Http\Controllers\ApiRestaurantController::class, 'mapMarker']);

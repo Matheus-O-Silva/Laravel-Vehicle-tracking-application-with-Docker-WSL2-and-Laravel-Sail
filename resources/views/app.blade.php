@@ -15,16 +15,16 @@
         </style>
 
         <style>
-        /* 
+        /*
         * Always set the map height explicitly to define the size of the div element
-        * that contains the map. 
+        * that contains the map.
         */
         #map {
             height: 100%;
         }
 
-        /* 
-        * Optional: Makes the sample page fill the window. 
+        /*
+        * Optional: Makes the sample page fill the window.
         */
         html,
         body {
@@ -39,45 +39,86 @@
 
         <button onclick="updatePosition()">Update Position</button>
         <div id="map"></div>
-    
+
     <script	src="{{ asset('js/app.js') }}"></script>
+    <script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
     <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBk3ni-jhFwqf-LdrviJEAZPA2qJk-yyOk&callback=initMap&v=weekly"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_T8PR14UUOgHgvroeuTN2-pM3rKLaMAM&callback=initMap&v=weekly"
     async
     ></script>
     <script>
 
-        let map;
-        let markerl;
+function initMap() {
 
-        function initMap() {
-            // The location of Uluru
-            const uluru = {lat: -22.91336712781438, lng: -43.230395140425436};
-            // The map, centered at Uluru
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 17,
-                center: uluru,
-            });
-            // The marker, positioned at Uluru
-            marker = new google.maps.Marker({
-                position: uluru,
-                map: map,
-            });
-        }
+    var mapElement = document.getElementById('map');
+    var url = `/api/map-marker`;
 
-        function updatePosition(newLat, newLng){
-            const latLng = {lat: newLat, lng: newLng };
-            marker.setPosition(latLng);
-            map.setCenter(latLng);
-        }
+    async function markerscodes() {
+        var data = await axios(url);
+        var lacationData = data.data;
+        mapDisplay(lacationData);
+    }
+    markerscodes();
 
-        Echo.channel('tracker-app')
-        .listen('CarMoved', (e) => {
-            updatePosition(e.lat, e.lng)
-        });
+        function mapDisplay(datas) {
 
-        //window.initMap = initMap;
+            //map options
+            var options = {
+                //center: { lat:6.9586, lng: 79.9662 }, //Heiyanthuduwa
+                // center: { lat: 6.9333296, lng: 79.9833294 }, Biygama
+                center: { lat:Number(datas[0].coords_lat), lng:  Number(datas[0].coords_lng) },
+                zoom: 10
+            }
+            // Create a map object and specify the DOM element for display.
+            var map = new google.maps.Map(mapElement, options );
 
-    </script>    
+
+            var markers = new Array();
+
+                for (let index = 0; index < datas.length; index++) {
+                    markers.push({
+                        coords: { lat: Number(datas[index].coords_lat), lng:  Number(datas[index].coords_lng) },
+                        icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/',
+                        content: `<div><h5>${datas[index].location_title}</h5><p><i class="icon address-icon"></i>${datas[index].addressline1}</p><p>${datas[index].addressline2}, ${datas[index].city}</p><small>${datas[index].location_email}</small></div>`
+                    })
+                }
+
+                //loop through marker
+                for ( var i = 0; i < markers.length; i++ ){
+                    addMarker(markers[i]);
+                }
+
+            //addMarker();
+            function addMarker(props){
+                var marker = new google.maps.Marker({
+                    position: props.coords,
+                    map:map
+                });
+
+                if(props.iconImage){
+                    marker.setIcon(props.iconImage);
+                }
+
+                if(props.content){
+
+                    var infowindow = new google.maps.InfoWindow({
+                        content: props.content
+                    });
+
+                    marker.addListener('click', function() {
+                        infowindow.open(map, marker);
+                    });
+
+                }
+            }
+
+
+        };
+
+    } //initMap end
+
+
+
+    </script>
     </body>
 </html>
