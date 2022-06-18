@@ -15,16 +15,16 @@
         </style>
 
         <style>
-        /* 
+        /*
         * Always set the map height explicitly to define the size of the div element
-        * that contains the map. 
+        * that contains the map.
         */
         #map {
             height: 100%;
         }
 
-        /* 
-        * Optional: Makes the sample page fill the window. 
+        /*
+        * Optional: Makes the sample page fill the window.
         */
         html,
         body {
@@ -39,12 +39,9 @@
 
         <button onclick="updatePosition()">Update Position</button>
         <div id="map"></div>
-    
+
     <script	src="{{ asset('js/app.js') }}"></script>
-    <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBk3ni-jhFwqf-LdrviJEAZPA2qJk-yyOk&callback=initMap&v=weekly"
-    async
-    ></script>
+    <script src="https://maps.googleapis.com/maps/api/js?AIzaSyD_T8PR14UUOgHgvroeuTN2-pM3rKLaMAM&callback=initMap&v=weekly" async></script>
     <script>
 
         let map;
@@ -55,7 +52,7 @@
             const uluru = {lat: -22.91336712781438, lng: -43.230395140425436};
             // The map, centered at Uluru
             map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 17,
+                zoom: 13,
                 center: uluru,
             });
             // The marker, positioned at Uluru
@@ -68,8 +65,31 @@
         function updatePosition(newLat, newLng){
             const latLng = {lat: newLat, lng: newLng };
             marker.setPosition(latLng);
-            map.setCenter(latLng);
+            //map.setCenter(latLng);
         }
+
+        const positions = [
+            { lat: -22.910617, long: -43.227763 },
+            { lat: -22.912029, long: -43.226349 },
+            { lat: -22.914247, long: -43.228161 },
+            { lat: -22.916134, long: -43.229745 },
+            { lat: -22.916504, long: -43.239272 },
+            { lat: -22.918209, long: -43.248320 },
+            { lat: -22.919917, long: -43.260762 },
+            { lat: -22.918599, long: -43.263036 },
+            { lat: -22.914607, long: -43.263270 },
+            { lat: -22.912845, long: -43.265920 },
+        ];
+
+        var index = 0;
+        setInterval(function () {
+
+            updatePosition(positions[index].lat, positions[index].long)
+            console.log('lat: '+ positions[index].lat, 'long: '+ positions[index].long)
+
+            index = ( index + 1 )
+
+        }, 2000);
 
         Echo.channel('tracker-app')
         .listen('CarMoved', (e) => {
@@ -78,6 +98,6 @@
 
         //window.initMap = initMap;
 
-    </script>    
+    </script>
     </body>
 </html>

@@ -24,5 +24,5 @@ Route::get('/app', function () {
 });
 
 Route::get('/move', function () {
-    event(new CarMoved(-22.951908011335632, -43.21047912431532));
+    event(new CarMoved(-22.910617, -43.227763));
 });
